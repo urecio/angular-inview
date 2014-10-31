@@ -4,11 +4,25 @@
   var addWindowInViewItem, bindWindowEvents, checkInView, debounce, getBoundingClientRect, getViewportHeight, removeWindowInViewItem, trackInViewContainer, triggerInViewCallback, unbindWindowEvents, untrackInViewContainer, windowCheckInViewDebounced, windowEventsHandler, _containersControllers, _windowEventsHandlerBinded, _windowInViewItems,
     __slice = [].slice;
 
-  angular.module('angular-inview', []).directive('inView', [
-    '$parse', function($parse) {
+  angular.module('angular-inview', [])
+  .provider('angularinview',function (){
+    var delayBeforeCheck = 100;
+    return {
+      setDelayBeforeCheck: function(delay){
+        delayBeforeCheck = delay;
+      },
+      $get: function (){
+      return{
+        getDelayBeforeCheck: delayBeforeCheck
+      }
+    } 
+    }
+  })
+  .directive('inView', [
+    '$parse','inViewFactory', function($parse) {
       return {
         restrict: 'A',
-        require: '?^inViewContainer',
+        require: '?^trackInViewContainerer',
         link: function(scope, element, attrs, containerController) {
           var inViewFunc, item, performCheckDebounced;
           if (!attrs.inView) {
@@ -58,7 +72,7 @@
         }
       };
     }
-  ]).directive('inViewContainer', function() {
+  ]).directive('inViewContainer', function(inViewFactory) {
     return {
       restrict: 'AC',
       controller: [
@@ -99,9 +113,9 @@
         });
       }
     };
-  });
-
-  _windowInViewItems = [];
+  })
+.factory('inViewFactory',function(angularinview){
+    _windowInViewItems = [];
 
   addWindowInViewItem = function(item) {
     _windowInViewItems.push(item);
@@ -287,6 +301,7 @@
 
   windowCheckInViewDebounced = debounce(function(event) {
     return checkInView(_windowInViewItems, null, event);
-  });
-
+  }, angularinview.getDelayBeforeCheck);
+});
 }).call(this);
+

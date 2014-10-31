@@ -29,6 +29,12 @@ In your AngularJS app, you'll need to import the `angular-inview` module:
 angular.module('myModule', ['angular-inview']);
 ```
 
+Position will be checked with a default delay of 100 milisecs, in order to customize that, inject the provider in your module like:
+
+```
+angularinviewProvider.setDelayBeforeCheck(30);
+```
+
 ## Usage
 
 This module will define two directives: `in-view` and `in-view-container`.
